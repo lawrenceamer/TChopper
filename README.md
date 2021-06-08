@@ -1,6 +1,6 @@
 # TChopper
 
-New technique I have discovered recently to perfrom lateral movement using windows services displayname by sumggling the malicious binary as base64 chuncks and automate the process using the TChopper tool. 
+New technique I have discovered recently and give it a nick name (Chop chop) to perfrom lateral movement using windows services displayname by sumggling the malicious binary as base64 chuncks and automate the process using the TChopper tool. 
 
 
 ![image](https://0xsp.com/storageCenter/1623166632.jpg)
