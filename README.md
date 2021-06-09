@@ -13,6 +13,8 @@ New technique I have discovered recently and give it a nick name (Chop chop) to 
 * modify service lpbinarypath parameter with required commandline to grab service displayname and pip out the results into tmp_payload.txt 
 * finally, after finishing delivering all chuncks of the file as base64, the tool will create another service to decode the content into valid executbale and run it 
 
+![image](https://0xsp.com/storageCenter/1623222054.png)
+
 ## Usage 
 
 ```
