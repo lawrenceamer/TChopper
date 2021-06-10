@@ -2,6 +2,7 @@
 
 New technique I have discovered recently and give it a nickname (Chop chop) to perform lateral movement using windows services display name by smuggling the malicious binary as base64 chunks and automate the process using the TChopper tool. 
 
+![image](https://i.imgur.com/bTZlLC8.png)(https://twitter.com/zux0x3a/status/1402327825139441666)
 
 ![image](https://0xsp.com/storageCenter/1623166632.jpg)
 
