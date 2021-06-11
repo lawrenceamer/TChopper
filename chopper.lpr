@@ -523,14 +523,14 @@ begin
  end;
 // loop becomes here
 len := length(res);
-numelem := len div 150;
+numelem := len div 512;
 
-if len mod 150 <>0 then
+if len mod 512 <>0 then
 inc(NumElem);
 setLength(arr,NumElem);
 
 for p := 0 to High(arr) do
-Arr[p] := copy(res,p * 150 + 1, 150);
+Arr[p] := copy(res,p * 512 + 1, 512);
 
 for p := 0 to High (arr) do begin
 
