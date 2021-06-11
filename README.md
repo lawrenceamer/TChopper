@@ -19,7 +19,12 @@ New technique I have discovered recently and give it a nickname (Chop chop) to p
 ## Usage 
 
 ```
+#chop chop mode 
 chopper.exe -s -u USERNAME -p PASSWORD -d DOMAIN -f BINARYLOCAL PATH 
+
+
+# chop chop done 
+chopper.exe -m -u USERNAME -p PASSWORD -d DOMAIN -f BINARYLOCAL PATH 
 ```
 
 https://youtu.be/xbvhzHul7w0
