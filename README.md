@@ -11,7 +11,7 @@ New technique I have discovered recently and give it a nickname (Chop chop) to p
 * the tool will get the file you willing to smuggle and encode the file as base64 into memory stream 
 * divide the length of each line to fit 150-250 character length (250 is maximum allowed space for service lpDisplayname parameter https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-createservicea).
 * for chop chop attack it will create a unique service for each segmented chunk => start the service => then delete it to avoid duplicates or you can choose
-to only modify the service attack mode to be more faster and stable.
+to only modify the service attack mode to be more faster and stable by choosing attack mode option (**-m**)
 * later on, it will modify service lpbinarypath parameter with required command line to grab service display name and pip out the results into tmp_payload.txt 
 * finally, after finishing delivering all chuncks of the file as base64, the tool will create another service to decode the content into valid executbale and run it 
 
